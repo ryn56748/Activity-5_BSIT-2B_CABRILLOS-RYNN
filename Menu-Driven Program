@@ -1,0 +1,265 @@
+
+class Node:
+    def __init__(self, value):
+        self.value = value
+        self.next = None
+
+
+# 1. Array Stack
+class ArrayStack:
+    def __init__(self, capacity):
+        self.data = [None] * capacity
+        self.top = -1
+
+    def is_empty(self):
+        return self.top == -1
+
+    def is_full(self):
+        return self.top == len(self.data) - 1
+
+    def push(self, value):
+        if self.is_full():
+            raise OverflowError("Stack overflow")
+        self.top += 1
+        self.data[self.top] = value
+
+    def pop(self):
+        if self.is_empty():
+            raise IndexError("Stack underflow")
+        value = self.data[self.top]
+        self.data[self.top] = None
+        self.top -= 1
+        return value
+
+    def peek(self):
+        if self.is_empty():
+            raise IndexError("Stack is empty")
+        return self.data[self.top]
+
+    def show(self):
+        print("Stack state:", self.data)
+        print("Top index:", self.top)
+
+
+# 2. Linked Stack
+class LinkedStack:
+    def __init__(self):
+        self.top = None
+
+    def is_empty(self):
+        return self.top is None
+
+    def push(self, value):
+        node = Node(value)
+        node.next = self.top
+        self.top = node
+
+    def pop(self):
+        if self.is_empty():
+            raise IndexError("Stack underflow")
+        value = self.top.value
+        self.top = self.top.next
+        return value
+
+    def peek(self):
+        if self.is_empty():
+            raise IndexError("Stack is empty")
+        return self.top.value
+
+    def show(self):
+        items = []
+        current = self.top
+        while current is not None:
+            items.append(current.value)
+            current = current.next
+        print("Stack state (top to bottom):", items)
+
+
+# 3. Circular Array Queue
+class ArrayQueue:
+    def __init__(self, capacity):
+        self.data = [None] * capacity
+        self.front = 0
+        self.size = 0
+
+    def is_empty(self):
+        return self.size == 0
+
+    def is_full(self):
+        return self.size == len(self.data)
+
+    def enqueue(self, value):
+        if self.is_full():
+            raise OverflowError("Queue overflow")
+        rear = (self.front + self.size) % len(self.data)
+        self.data[rear] = value
+        self.size += 1
+
+    def dequeue(self):
+        if self.is_empty():
+            raise IndexError("Queue underflow")
+        value = self.data[self.front]
+        self.data[self.front] = None
+        self.front = (self.front + 1) % len(self.data)
+        self.size -= 1
+        return value
+
+    def peek_front(self):
+        if self.is_empty():
+            raise IndexError("Queue is empty")
+        return self.data[self.front]
+
+    def show(self):
+        items = []
+        for i in range(self.size):
+            items.append(
+                self.data[(self.front + i) % len(self.data)]
+            )
+        print("Queue state (front to rear):", items)
+        print("Array storage:", self.data)
+
+
+# 4. Linked Queue
+class LinkedQueue:
+    def __init__(self):
+        self.front = None
+        self.rear = None
+
+    def is_empty(self):
+        return self.front is None
+
+    def enqueue(self, value):
+        node = Node(value)
+        if self.is_empty():
+            self.front = node
+        else:
+            self.rear.next = node
+        self.rear = node
+
+    def dequeue(self):
+        if self.is_empty():
+            raise IndexError("Queue underflow")
+        value = self.front.value
+        self.front = self.front.next
+        if self.front is None:
+            self.rear = None
+        return value
+
+    def peek_front(self):
+        if self.is_empty():
+            raise IndexError("Queue is empty")
+        return self.front.value
+
+    def show(self):
+        items = []
+        current = self.front
+        while current is not None:
+            items.append(current.value)
+            current = current.next
+        print("Queue state (front to rear):", items)
+
+
+# Choose implementation
+print("Choose Implementation")
+print("1. Array Stack")
+print("2. Linked Stack")
+print("3. Circular Array Queue")
+print("4. Linked Queue")
+
+choice = input("Enter choice: ")
+
+try:
+    if choice == "1":
+        capacity = int(input("Enter stack capacity: "))
+        if capacity <= 0:
+            raise ValueError("Capacity must be greater than zero")
+        structure = ArrayStack(capacity)
+        kind = "stack"
+
+    elif choice == "2":
+        structure = LinkedStack()
+        kind = "stack"
+
+    elif choice == "3":
+        capacity = int(input("Enter queue capacity: "))
+        if capacity <= 0:
+            raise ValueError("Capacity must be greater than zero")
+        structure = ArrayQueue(capacity)
+        kind = "queue"
+
+    elif choice == "4":
+        structure = LinkedQueue()
+        kind = "queue"
+
+    else:
+        print("Invalid choice")
+        structure = None
+
+except ValueError as e:
+    print("Error:", e)
+    structure = None
+
+
+# Menu-driven operations
+while structure is not None:
+    print("\n--- Operation Menu ---")
+
+    if kind == "stack":
+        print("1. Push")
+        print("2. Pop")
+        print("3. Peek")
+    else:
+        print("1. Enqueue")
+        print("2. Dequeue")
+        print("3. Peek Front")
+
+    print("4. Is Empty")
+    print("5. Is Full")
+    print("6. Exit")
+
+    option = input("Enter operation: ")
+
+    if option == "6":
+        print("Program ended")
+        break
+
+    try:
+        if option == "1":
+            value = input("Enter value: ")
+            if kind == "stack":
+                structure.push(value)
+                print("Value pushed")
+            else:
+                structure.enqueue(value)
+                print("Value enqueued")
+
+        elif option == "2":
+            if kind == "stack":
+                print("Removed:", structure.pop())
+            else:
+                print("Removed:", structure.dequeue())
+
+        elif option == "3":
+            if kind == "stack":
+                print("Top value:", structure.peek())
+            else:
+                print("Front value:", structure.peek_front())
+
+        elif option == "4":
+            print("Is empty:", structure.is_empty())
+
+        elif option == "5":
+            if isinstance(structure, (ArrayStack, ArrayQueue)):
+                print("Is full:", structure.is_full())
+            else:
+                print("Is full: Not applicable (linked structure)")
+
+        else:
+            print("Invalid operation")
+            continue
+
+    except (IndexError, OverflowError) as e:
+        print("Error:", e)
+
+    # Display state after every operation
+    structure.show()

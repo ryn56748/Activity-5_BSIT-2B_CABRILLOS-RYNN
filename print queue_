@@ -1,0 +1,21 @@
+queue = deque()
+
+# Add print jobs
+queue.append({"id": "J1", "pages": 5})
+queue.append({"id": "J2", "pages": 3})
+queue.append({"id": "J3", "pages": 8})
+
+print("Print queue:", list(queue))
+
+# Print jobs in FIFO order
+while queue:
+    job = queue.popleft()
+    print("Printing:", job["id"])
+    print("Pages:", job["pages"])
+    print("Job completed:", job["id"])
+    
+    if queue:
+        print("Waiting jobs:",
+              [item["id"] for item in queue])
+    else:
+        print("Waiting jobs: None")
